@@ -8,7 +8,7 @@
     "domain": "nestup_evn",
     "iot_class": "cloud_polling",
     "issue_tracker": "https://github.com/trvqhuy/nestup_evn/issues",
-    "name": "EVN Data Fetcher",
+    "name": "EVN Data Fetcher (CuongPL Edition)",
     "requirements": [
         "python_dateutil",
         "voluptuous"
