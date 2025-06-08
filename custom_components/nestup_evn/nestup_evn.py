@@ -397,7 +397,7 @@ class EVNAPI:
 
         sub_data = resp_json["data"]["chiSoNgay"]
 
-        from_date = parser.parse(sub_data[0]["ngay"], dayfirst=True)
+        from_date = parser.parse(sub_data[0]["ngay"], dayfirst=True) + timedelta(days=1)
         to_date = parser.parse(
             sub_data[(-1 if len(sub_data) > 1 else 0)]["ngay"], dayfirst=True
         ) - timedelta(days=1)
@@ -1001,7 +1001,7 @@ def formatted_result(raw_data: dict) -> dict:
 
         res[ID_ECON_DAILY_NEW] = {"value": raw_data[ID_ECON_DAILY_NEW], "info": info}
         res[ID_ECOST_DAILY_NEW] = {
-            "value": calc_ecost(raw_data[ID_ECON_DAILY_NEW]),
+            "value": round(int(calc_ecost(raw_data[ID_ECON_DAILY_NEW]*365/12))*12/365),
             "info": info,
         }
 
@@ -1015,7 +1015,7 @@ def formatted_result(raw_data: dict) -> dict:
 
         res[ID_ECON_DAILY_OLD] = {"value": raw_data[ID_ECON_DAILY_OLD], "info": info}
         res[ID_ECOST_DAILY_OLD] = {
-            "value": calc_ecost(raw_data[ID_ECON_DAILY_OLD]),
+            "value": round(int(calc_ecost(raw_data[ID_ECON_DAILY_OLD]*365/12))*12/365),
             "info": info,
         }
 
@@ -1126,13 +1126,15 @@ def generate_datetime(monthly_start=1, offset=0):
     time_obj = datetime.now()
 
     current_day = int(time_obj.strftime("%-d"))
-    monthly_start_str = "{:0>2}".format(monthly_start - 1 + offset)
+    monthly_start_str = "{:0>2}".format(monthly_start - 2 + offset)
 
     to_date = (time_obj - timedelta(days=1 - offset)).strftime("%d/%m/%Y")
 
     # Example: billing start date is 08/09/2022
     #           and current date is 09/09/2022
-    if current_day > monthly_start:
+    if monthly_start_str == "00":
+        from_date = (time_obj.replace(day=1) - timedelta(days=1)).strftime("%d/%m/%Y")
+    elif current_day >= monthly_start:
         from_date = f"{monthly_start_str}/{time_obj.strftime('%m/%Y')}"
 
     else:
